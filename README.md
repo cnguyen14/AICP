@@ -1,7 +1,7 @@
 # AI Inter-Agent Communication Protocol (AICP)  
 **Version 0.1 – Draft Specification**  
-**Author:** Chien Nguyen 
-**Date:** April 7, 2025
+**Author:** [Your Name or Organization]  
+**Date:** April 2025
 
 ---
 
@@ -23,7 +23,8 @@ The proliferation of AI agents within businesses, logistics, e-commerce, and oth
 - Ensure **data security**, **trust-based control**, and **scalability**  
 - Enable agents to **negotiate**, **query**, and **respond** autonomously  
 - Support **differentiated response levels** based on trust models  
-- Enable monetized agent services through pay-per-interaction design
+- Enable **service agents** with optional billing and credit enforcement  
+- Include safety and escalation mechanisms for reliability at scale
 
 ---
 
@@ -40,80 +41,113 @@ Example:
 
 ### 3.2 Authentication Mechanisms
 
-Agents must establish trust before interaction. This involves:
-
-- **API Keys** – Simple integration  
-- **OAuth 2.0 / JWT Tokens** – Scalable, secure access control  
-- **Public Key Infrastructure (PKI)** – Enterprise-level identity assurance
+AICP supports multiple authentication approaches, including:
+- **API Keys** – For simple or internal use cases  
+- **OAuth 2.0 / JWT Tokens** – For modern web-based agent authorization  
+- **Certificates** – For secure, verified B2B communication (recommended)
 
 ---
 
-### 3.3 Token Exchange & Registration
+### 3.3 Certificate-Based Agent Registration & Authentication
 
-Before communication is allowed, **Company A must register with Company B’s system**. This step ensures secure and verified interaction.
+To initiate communication, **Company A must register its agent with Company B**. This process establishes trust and defines what kinds of requests Agent A is authorized to make to Agent B.
 
-**Workflow:**
-1. **Registration**: Company A sends a request to register with Company B. It includes the Agent ID, intended use, and metadata.
-2. **Approval**: Company B reviews and approves the request.
-3. **Token Issuance**: Company B generates a signed token (e.g., JWT) with permissions defined by the agreement.
-4. **Verification**: All future communications from Company A to Company B must include this token in the request. Company B verifies the token before processing.
+#### A. Registration Request Flow
 
-> This registration-based approach protects both sides and ensures only authorized agents can exchange information.
+1. **Company A initiates registration**, providing:
+   - Agent Identifier (AID)
+   - Contact info
+   - Business name
+   - Intended intents (e.g., `get_product_price`)
+   - Billing preferences (if any)
+
+2. **Company B reviews** and:
+   - Approves or denies
+   - Assigns allowed intents and trust level
+   - Determines billing requirements (if applicable)
+
+---
+
+#### B. Certificate Issuance
+
+Upon approval:
+- **Company B generates a signed certificate** for Agent A  
+- **The certificate is sent to Company A** to install on their agent  
+- Company B stores the certificate and maps it to:
+  - The AID  
+  - The list of allowed intents  
+  - Trust level and billing account (if used)
+
+---
+
+#### C. Certificate-Based Authentication
+
+Agent A must present this certificate on every message sent to Agent B.  
+Company B will:
+- Verify the certificate's signature and validity  
+- Lookup associated permissions and billing config  
+- Approve or reject requests based on trust level, usage, and quota
+
+---
+
+#### D. Certificate Expiration & Renewal
+
+- Certificates contain an expiration date  
+- Company A must renew before expiry  
+- Company B may revoke certificates at any time
+
+---
+
+#### E. Optional Billing Agent Integration
+
+If payment is required:
+- Billing is linked to certificate identity  
+- Usage is tracked per intent  
+- Credits, subscriptions, or postpaid plans are enforced accordingly
 
 ---
 
 ### 3.4 Communication Plans & Trust Levels
 
-In AICP, an agent (e.g., Company A) can define **different trust levels** for incoming communication from other agents. This determines **how much the agent is willing to respond**, what types of questions are acceptable, and how deep the interaction can go.
+Agents can assign trust levels to others:
 
-#### Example:
+| Trust Level | Capabilities |
+|-------------|--------------|
+| Enterprise  | Full access, any question, negotiations |
+| Standard    | Limited intents, filtered data |
+| Basic       | Read-only, public info only |
 
-- **Plan 1 (High-Level Enterprise - Trusted Partner):**
-  - Can initiate any question or request  
-  - Can receive full and detailed responses  
-  - May trigger advanced functions (e.g., negotiations, business decisions)  
-
-- **Plan 2 (Standard Partner - Limited Access):**
-  - Can only ask predefined question types  
-  - May receive summarized or filtered answers  
-  - No access to sensitive or strategic-level queries  
-
-> For example, Company A may treat Company B as a high-level enterprise under **Plan 1**, granting them full conversational freedom. Meanwhile, Company C may fall under **Plan 2**, only receiving responses for basic, approved intents.
+This allows flexible control over what agents can do or see based on business relationship or intent.
 
 ---
 
 ### 3.5 Paid Access via Service Agents
 
-AICP supports the concept of **Service Agents** — agents that provide paid services or premium responses only upon successful payment or subscription validation.
-
-This model supports scenarios such as:
-- Access to premium data or analytics
-- Pay-per-use transaction processing
-- Tiered service models with limited free access
+**Service Agents** are agents that provide paid services such as premium data, automation, or negotiation.
 
 #### Payment Enforcement
 
-A service agent may require:
-- A valid **payment token** (e.g., Stripe session ID, invoice ID, credit balance)
-- A verified **subscription or entitlement token**
-- A reference to a completed transaction (handled off-protocol)
+Agents may require:
+- Valid payment token or session
+- Credit balance or active subscription
+- Linked billing identity (via certificate or token)
 
-If no valid token is provided, the agent responds with an error:
+Error response for unpaid access:
 
 ```plaintext
 type: ERROR
-intent: get_advanced_specs
-message: "Payment required or token invalid"
 code: 402
+message: "Payment required"
 ```
 
-#### Supported Models
+#### Role-Based Billing Logic
 
-- **Pay-per-Intent**: Each interaction is metered and charged individually  
-- **Access Tiers**: Tokens unlock different levels of response or detail  
-- **Subscriptions**: Recurring access is granted for specified durations
-
-> Service Agents allow AI developers and businesses to monetize agent-based systems while maintaining security and protocol alignment.
+| Agent Role         | Billing Requirement     |
+|--------------------|-------------------------|
+| Information Agent  | Free                    |
+| Internal Agent     | No external access      |
+| Service Agent      | Paid                    |
+| Hybrid Agent       | Mixed (free + paid)     |
 
 ---
 
@@ -121,113 +155,151 @@ code: 402
 
 ### 4.1 Transport Layer
 
-AICP supports multiple transport layers:
-
 - **HTTPS** (default)  
-- **MQTT**, **WebSocket**, or **gRPC** for real-time or embedded applications
+- **WebSocket / gRPC / MQTT** (optional for real-time)
 
 ---
 
 ## 5. Agent Communication Structure
 
-AICP enables intelligent agents to communicate through **intent-driven, semantically meaningful messages**. These messages are not static API calls or queries. Instead, they are part of an ongoing dialog between two intelligent agents that negotiate, request, and respond based on shared understanding and trust.
-
-To achieve this, agents need more than just structured data — they need **mutual comprehension** of each other’s **intents** and **capabilities**.
+AICP enables **intent-based, semantic communication** between autonomous agents.
 
 ---
 
-### 5.1 Intent-Based Communication
+### 5.1 Intent-Based Message Format
 
-Each message includes the following components:
-
-- **Protocol Version**  
-- **Sender and Receiver AIDs**  
-- **Timestamp**  
-- **Type** (`REQUEST`, `RESPONSE`, `NEGOTIATION`, `NOTIFY`, `ERROR`)  
-- **Intent** (e.g., `get_product_price`, `check_inventory`)  
-- **Payload**  
-- **Authentication token**
+Each message includes:
+- `protocol`: `"AICP"`  
+- `version`: `"0.1"`  
+- `from`: Agent AID  
+- `to`: Agent AID  
+- `timestamp`: UTC  
+- `type`: `REQUEST`, `RESPONSE`, `NOTIFY`, etc.  
+- `intent`: Purpose (e.g., `get_product_price`)  
+- `payload`: Request data  
+- `auth`: Certificate or token reference
 
 ---
 
 ### 5.2 Shared Understanding of Intents
 
-AICP supports shared understanding through:
-
-#### A. Shared Intent Registry
-
-Agents can expose supported intents and payload formats publicly or on request using:
-
-```plaintext
-intent: list_supported_intents
-```
-
-#### B. Intent Discovery
-
-Agents may dynamically explore other agents' capabilities through discovery messages.
-
-#### C. Semantic Flexibility
-
-Agents may use embeddings, ontologies, or LLMs to interpret synonyms and similar intents even without hardcoding.
+Agents can:
+- Publish supported intents (via registry)
+- Respond to `list_supported_intents` requests
+- Use ontology or LLM-based mappings for flexibility
 
 ---
 
 ### 5.3 Trust-Aware Response Control
 
-Each agent has the right to selectively respond based on the sender's trust level.
+Responses vary by trust level and allowed intents.
 
 ---
 
-### 5.4 Example Interaction (Without Predefined Query)
+### 5.4 Example Interaction
 
-1. Agent A connects and authenticates with Agent B  
-2. Agent A sends: `intent: list_supported_intents`  
-3. Agent B responds with a list  
-4. Agent A chooses one and sends a `REQUEST` with the proper payload
+1. Agent A: `list_supported_intents`  
+2. Agent B: Responds with a list  
+3. Agent A: Sends `get_product_price`  
+4. Agent B: Responds or rejects based on access config
 
 ---
 
-### 5.5 Extensible Message Format
+### 5.5 Extensible Format
 
-JSON is default, but other formats (XML, Protobuf, GraphQL) are allowed as long as **intent and trust logic** remain.
+JSON is default; XML, gRPC, or Protobuf are also supported if both agents agree.
 
 ---
 
 ## 6. Use Case: B2B Quote Request
 
-Agent A asks Agent B for pricing information. After discovering supported intents and trust policies, it sends a request with `get_product_price`. Agent B responds with cost and availability.
+Company A’s agent requests pricing from Company B’s service agent. After certificate authentication and trust-level validation, the pricing is returned.
 
 ---
 
 ## 7. Security Considerations
 
-- All communication over TLS  
-- Expiring/refreshable tokens  
-- Trust-based filtering and intent whitelisting  
-- Logging of sensitive exchanges  
+- Encrypted channels (TLS)
+- Certificate expiration and revocation
+- Token fallback support (optional)
+- Activity logging and rate limiting
+- Role-based access controls per intent
 
 ---
 
 ## 8. Future Work
 
-- Blockchain-based agent ID verification  
-- Decentralized intent registries  
 - Agent marketplaces  
-- Built-in billing, metering, and microtransactions  
-- SDKs for popular platforms  
+- On-chain certificate verification  
+- Public agent directories  
+- SDKs for rapid integration  
+- Integration with decentralized identity protocols
 
 ---
 
 ## 9. Conclusion
 
-AICP provides the foundation for **secure, scalable, and intelligent communication between AI agents**. With support for **trust models**, **paid services**, and **dynamic understanding**, AICP enables the next generation of **autonomous, monetized, and collaborative AI systems** for the real world.
+AICP defines a flexible, secure, and extensible framework for autonomous AI agents to communicate, transact, and collaborate across organizational boundaries. By leveraging trust models, billing integration, and certificate-based authentication, it empowers enterprises to automate responsibly and intelligently.
 
 ---
 
-## References
+## 10. Fault Handling, Loops & Safety
 
-- Model Context Protocol (MCP), OpenAI, 2024  
-- OAuth 2.0 Authorization Framework, IETF RFC 6749  
-- JSON Web Tokens (JWT), RFC 7519  
-- MQTT v5.0 Specification, OASIS Standard  
-- gRPC Protocol, Google, 2023
+### 10.1 Loop Prevention
+
+- Message ID tracking  
+- TTL / hop limits  
+- Retry caps
+
+---
+
+### 10.2 Error Handling
+
+Standard codes:
+- `401 Unauthorized`
+- `402 Payment Required`
+- `403 Forbidden`
+- `429 Too Many Requests`
+- `500 Internal Error`
+
+---
+
+### 10.3 Health & Trust Signals
+
+- Agent health status: `healthy`, `degraded`, `offline`  
+- Auto-suspend high-failure agents  
+- Trust reputation scoring
+
+---
+
+### 10.4 Billing Abuse Protection
+
+- Daily usage caps  
+- Rate limit per intent  
+- Auto-lock for unpaid overuse
+
+---
+
+### 10.5 Manual Override
+
+- Kill switch / pause toggle  
+- Webhook logging of abuse  
+- Admin tools for revocation
+
+---
+
+### 10.6 Human Escalation
+
+If the system detects:
+- Unresolvable errors  
+- Repeating failure loops  
+- Undefined or dangerous intent
+
+Then the agent should:
+- Escalate to human via alert or dashboard  
+- Log the full message history  
+- Pause further communication until reviewed
+
+> Automation should never override safety. When in doubt — escalate to a human.
+
+---
