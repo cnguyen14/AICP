@@ -1,7 +1,7 @@
 # AI Inter-Agent Communication Protocol (AICP)  
 **Version 0.1 – Draft Specification**  
-**Author:** [Your Name or Organization]  
-**Date:** April 2025
+**Author:** Chien Nguyen 
+**Date:** April 07 2025
 
 ---
 
