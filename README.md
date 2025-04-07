@@ -1,94 +1,94 @@
-# AI Inter-Agent Communication Protocol (AICP)  
-*Version 0.1 — Draft Specification*
+# AI Inter-Agent Communication Protocol (AICP)
+
+**Version 0.1 – Draft Specification**  
+**Author**: [Your Name or Organization]  
+**Date**: April 2025
+
+---
+
+## Abstract
+
+As artificial intelligence (AI) agents become integral to enterprise operations, a need arises for a standardized communication protocol to facilitate secure, intelligent interaction between agents across organizational boundaries. This paper proposes the **AI Inter-Agent Communication Protocol (AICP)** — a secure, extensible framework that enables agents to exchange information, services, and intent-driven tasks in a structured and policy-aware manner.
 
 ---
 
 ## 1. Introduction
 
-### 1.1 Purpose  
-The **AI Inter-Agent Communication Protocol (AICP)** is a standardized protocol designed to enable **intelligent agents** (AI agents) to securely and reliably communicate across different organizations or systems. It facilitates automated **data exchange**, **requests**, **actions**, and **negotiations** between agents in enterprise or decentralized environments.
-
-### 1.2 Use Cases
-- Company A's AI agent requests real-time product pricing from Company B's AI agent.  
-- AI agents from different departments or vendors collaborate to optimize a supply chain.  
-- Distributed AI agents communicate status updates, service offers, or alerts.
+The proliferation of AI agents within businesses, logistics, e-commerce, and other sectors has increased the demand for automation in inter-company communication. Current solutions focus on APIs and manual integration pipelines, but these are not optimized for real-time, AI-native conversations. AICP addresses this gap by enabling agents to **discover, authenticate, and converse** with each other using structured JSON messages governed by organizational trust policies.
 
 ---
 
-## 2. Design Principles
+## 2. Objectives
 
-- **Security First**: All communications are encrypted and authenticated.  
-- **Interoperability**: Supports multiple platforms, languages, and AI frameworks.  
-- **Extensibility**: Easy to expand with new message types and services.  
-- **Human-Readable**: Uses JSON for message structure, allowing transparency and debugging.
-
----
-
-## 3. Agent Identity & Authentication
-
-### 3.1 Agent Identity  
-Each agent has a **globally unique identifier (AID)**.  
-Example: `agent://companyA/sales-bot`
+- Define a **universal protocol** for agent-to-agent communication
+- Ensure **data security**, **trust-based control**, and **scalability**
+- Enable agents to **negotiate**, **query**, and **respond** autonomously
+- Support **differentiated response levels** based on trust models
 
 ---
 
-### 3.2 Authentication Mechanisms  
-To ensure secure inter-agent communication, AICP enforces token-based authentication. The following methods are supported:
+## 3. Related Work
 
-- **API Keys** — For simple integrations  
-- **OAuth 2.0 / JWT Tokens** — For scalable, modern applications  
-- **Public Key Infrastructure (PKI)** — For enterprise-grade identity assurance
+Several standards exist for machine-to-machine (M2M) communication (e.g., MQTT, RESTful APIs), but few are optimized for **AI-driven, intent-based communication** between autonomous agents. Model Context Protocol (MCP) provides a foundation for agent-model interaction, but AICP extends this to **peer-level agent communication**, suitable for B2B or inter-service interactions.
 
 ---
 
-### 3.3 Token Exchange & Registration  
-Before communication is allowed, **Company A must register with Company B’s system**. This step ensures secure and verified interaction.
+## 4. Protocol Architecture
 
-**Workflow:**
-1. **Registration**: Company A sends a request to register with Company B. It includes the Agent ID, intended use, and metadata.
-2. **Approval**: Company B reviews and approves the request.
-3. **Token Issuance**: Company B generates a signed token (e.g., JWT) with permissions defined by the agreement.
-4. **Verification**: All future communications from Company A to Company B must include this token in the request. Company B verifies the token before processing.
+### 4.1 Agent Identity
 
-> This registration-based approach protects both sides and ensures only authorized agents can exchange information.
+Each agent is assigned a globally unique **Agent Identifier (AID)** in the format:
 
----
+```
+agent://companyDomain/agentName
+```
 
-### 3.4 Communication Plans & Trust Levels
-
-In AICP, an agent (e.g., Company A) can define **different trust levels** for incoming communication from other agents. This determines **how much the agent is willing to respond**, what types of questions are acceptable, and how deep the interaction can go.
-
-This mechanism allows an agent to control **who can ask what**, based on business relationship, reputation, or enterprise agreements.
-
-#### Example:
-
-- **Plan 1 (High-Level Enterprise - Trusted Partner):**
-  - Can initiate any question or request  
-  - Can receive full and detailed responses  
-  - May trigger advanced functions (e.g., negotiations, business decisions)  
-
-- **Plan 2 (Standard Partner - Limited Access):**
-  - Can only ask predefined question types  
-  - May receive summarized or filtered answers  
-  - No access to sensitive or strategic-level queries  
-
-> For example, Company A may treat Company B as a high-level enterprise under **Plan 1**, granting them full conversational freedom. Meanwhile, Company C may fall under **Plan 2**, only receiving responses for basic, approved intents.
-
-This trust-based structure ensures agents can operate securely while still allowing flexible inter-agent collaboration based on predefined trust models.
+Example:  
+`agent://companyA/sales-bot`
 
 ---
 
-## 4. Communication Protocol
+### 4.2 Authentication & Token Exchange
 
-### 4.1 Transport Layer  
-- **HTTPS** (default)  
-- **MQTT**, **WebSocket**, or **gRPC** (optional for real-time or embedded systems)
+Agents must establish trust before interaction. This involves:
+
+- **Registration**: An agent must register with a remote system before requesting access.
+- **Approval**: The receiving system approves and sets permission levels.
+- **Token Issuance**: A secure token (e.g., JWT) is generated.
+- **Token Use**: Tokens must be included in every message for verification.
 
 ---
 
-## 5. Message Format
+### 4.3 Communication Plans & Trust Levels
 
-All messages are in **JSON format**. Below is the general schema.
+Agents can assign **trust-based communication plans** to other agents:
+
+#### Plan 1 – High-Level Enterprise (Trusted):
+- Can ask any question
+- Receives full response data
+- Allowed to trigger sensitive operations
+
+#### Plan 2 – Limited Partner:
+- Can only send certain requests
+- Receives filtered or summarized responses
+- Restricted from sensitive queries
+
+> For example, Company A treats Company B as a trusted enterprise (Plan 1), allowing full interaction. Company C is under Plan 2 and receives only limited replies to basic questions.
+
+---
+
+### 4.4 Transport Protocols
+
+AICP supports multiple transport layers:
+
+- **HTTPS** (default)
+- **MQTT**, **WebSocket**, or **gRPC** for real-time or embedded applications
+
+---
+
+### 4.5 Message Format
+
+All messages use JSON:
 
 ```json
 {
@@ -111,34 +111,24 @@ All messages are in **JSON format**. Below is the general schema.
 
 ---
 
-### 5.1 Message Types
+### 4.6 Message Types
 
-- **REQUEST** – One agent asks another for data or action.  
-- **RESPONSE** – Follows up a request with data or confirmation.  
-- **NEGOTIATION** – Used for multi-step agreements or pricing.  
-- **NOTIFY** – Used for alerts, updates, or broadcasts.  
-- **ERROR** – Communicates any issues.
-
----
-
-## 6. Handshake & Discovery
-
-### 6.1 Agent Discovery  
-Agents can optionally register with a **directory service** or be known via DNS-style naming (`agent://domain.com/agentname`).
-
-### 6.2 Handshake Example  
-Initial contact may involve exchanging:  
-- Capabilities  
-- Supported intents  
-- Required credentials
+- `REQUEST` – Data or service inquiry  
+- `RESPONSE` – Reply to a request  
+- `NEGOTIATION` – Multi-step interaction  
+- `NOTIFY` – Asynchronous alerts or updates  
+- `ERROR` – Error message with code and description
 
 ---
 
-## 7. Use Case Example
+## 5. Use Case: B2B Quote Request
 
-### Company A requests a quote from Company B:
+### Scenario:
 
-**Request:**
+Company A wants to get a quote from Company B.
+
+#### Request:
+
 ```json
 {
   "protocol": "AICP",
@@ -157,7 +147,8 @@ Initial contact may involve exchanging:
 }
 ```
 
-**Response:**
+#### Response:
+
 ```json
 {
   "protocol": "AICP",
@@ -177,15 +168,35 @@ Initial contact may involve exchanging:
 
 ---
 
-## 8. Future Plans
+## 6. Security Considerations
 
-- AI-to-AI negotiation using GPT-like reasoning  
-- Plug-and-play SDKs in Python, Node.js, Go  
-- Blockchain-based identity and verification  
-- Federation support for multi-network agent discovery
+- All communication must be over **TLS/SSL**
+- Tokens should expire and be refreshed regularly
+- Agents should implement **intent whitelisting**
+- Logging and auditing for sensitive message types is recommended
 
 ---
 
-## 9. Conclusion
+## 7. Future Work
 
-AICP lays the groundwork for **machine-level B2B communication**. By providing a unified protocol for AI agents to interact, businesses can automate processes, reduce friction, and build intelligent ecosystems that communicate with minimal human input.
+- Federated agent directories with blockchain-based verification  
+- Fine-grained policy language for dynamic trust rules  
+- Built-in agent discovery and auto-handshake mechanisms  
+- SDKs for Python, JavaScript, Go  
+- Integration with autonomous negotiation engines
+
+---
+
+## 8. Conclusion
+
+AICP offers a flexible, secure, and extensible communication protocol for AI agents operating in multi-organization ecosystems. By supporting trust-based interaction, structured message formats, and scalable transport layers, it paves the way for seamless B2B automation, AI-native APIs, and intelligent ecosystems.
+
+---
+
+## References
+
+- Model Context Protocol (MCP), OpenAI, 2024  
+- OAuth 2.0 Authorization Framework, IETF RFC 6749  
+- JSON Web Tokens (JWT), RFC 7519  
+- MQTT v5.0 Specification, OASIS Standard  
+- gRPC Protocol, Google, 2023
