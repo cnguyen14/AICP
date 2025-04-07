@@ -1,4 +1,4 @@
-# AI Inter-Agent Communication Protocol (AICP)  
+# Agent Communication Protocol (ACP) 
 **Version 0.1 – Draft Specification**  
 **Author:** Chien Nguyen 
 **Date:** April 07 2025
