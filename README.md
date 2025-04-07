@@ -7,7 +7,7 @@
 
 ## Abstract
 
-As artificial intelligence (AI) agents become integral to enterprise operations, a need arises for a standardized communication protocol to facilitate secure, intelligent interaction between agents across organizational boundaries. This paper proposes the **AI Inter-Agent Communication Protocol (AICP)** — a secure, extensible framework that enables agents to exchange information, services, and intent-driven tasks in a structured and policy-aware manner.
+As artificial intelligence (AI) agents become integral to enterprise operations, a need arises for a standardized communication protocol to facilitate secure, intelligent interaction between agents across organizational boundaries. This paper proposes the **Agent Communication Protocol (ACP)** — a secure, extensible framework that enables agents to exchange information, services, and intent-driven tasks in a structured and policy-aware manner.
 
 ---
 
