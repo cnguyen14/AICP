@@ -13,7 +13,7 @@ As artificial intelligence (AI) agents become integral to enterprise operations,
 
 ## 1. Introduction
 
-The proliferation of AI agents within businesses, logistics, e-commerce, and other sectors has increased the demand for automation in inter-company communication. Current solutions focus on APIs and manual integration pipelines, but these are not optimized for real-time, AI-native conversations. AICP addresses this gap by enabling agents to **discover, authenticate, and converse** with each other using structured messages governed by organizational trust policies.
+The proliferation of AI agents within businesses, logistics, e-commerce, and other sectors has increased the demand for automation in inter-company communication. Current solutions focus on APIs and manual integration pipelines, but these are not optimized for real-time, AI-native conversations. ACP addresses this gap by enabling agents to **discover, authenticate, and converse** with each other using structured messages governed by organizational trust policies.
 
 ---
 
