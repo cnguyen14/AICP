@@ -41,7 +41,7 @@ Example:
 
 ### 3.2 Authentication Mechanisms
 
-AICP supports multiple authentication approaches, including:
+ACP supports multiple authentication approaches, including:
 - **API Keys** – For simple or internal use cases  
 - **OAuth 2.0 / JWT Tokens** – For modern web-based agent authorization  
 - **Certificates** – For secure, verified B2B communication (recommended)
@@ -162,14 +162,14 @@ message: "Payment required"
 
 ## 5. Agent Communication Structure
 
-AICP enables **intent-based, semantic communication** between autonomous agents.
+ACP enables **intent-based, semantic communication** between autonomous agents.
 
 ---
 
 ### 5.1 Intent-Based Message Format
 
 Each message includes:
-- `protocol`: `"AICP"`  
+- `protocol`: `"ACP"`  
 - `version`: `"0.1"`  
 - `from`: Agent AID  
 - `to`: Agent AID  
@@ -239,7 +239,7 @@ Company A’s agent requests pricing from Company B’s service agent. After cer
 
 ## 9. Conclusion
 
-AICP defines a flexible, secure, and extensible framework for autonomous AI agents to communicate, transact, and collaborate across organizational boundaries. By leveraging trust models, billing integration, and certificate-based authentication, it empowers enterprises to automate responsibly and intelligently.
+ACP defines a flexible, secure, and extensible framework for autonomous AI agents to communicate, transact, and collaborate across organizational boundaries. By leveraging trust models, billing integration, and certificate-based authentication, it empowers enterprises to automate responsibly and intelligently.
 
 ---
 
